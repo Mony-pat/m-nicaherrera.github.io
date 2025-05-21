@@ -1,0 +1,155 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mónica Herrera - Portafolio Profesional</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar">
+        <div class="logo">Mónica Herrera</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#sobre-mi">Sobre Mí</a></li>
+            <li><a href="#investigacion">Investigación</a></li>
+            <li><a href="#portafolio">Portafolio</a></li>
+            <li><a href="#ebook">Ebook</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Sección Home -->
+    <section id="home" class="section">
+        <div class="container">
+            <h1>Bienvenidos a mi Portafolio Profesional</h1>
+            <p>Economista especializada en análisis de datos, políticas públicas y desarrollo económico.</p>
+            <a href="#contacto" class="btn">Contáctame</a>
+        </div>
+    </section>
+
+    <!-- Sección Sobre Mí -->
+    <section id="sobre-mi" class="section">
+        <div class="container">
+            <h2>Sobre Mí</h2>
+            <p>Soy Mónica Herrera, economista con más de X años de experiencia en análisis económico, investigación y consultoría. Mi enfoque se centra en generar soluciones basadas en datos para problemas complejos en el ámbito económico y social.</p>
+            <p>Formación académica: [Añade aquí tu formación, ej. Maestría en Economía, Universidad XYZ].</p>
+        </div>
+    </section>
+
+    <!-- Sección Investigación -->
+    <section id="investigacion" class="section">
+        <div class="container">
+            <h2>Investigación</h2>
+            <p>Aquí se presentan mis principales trabajos de investigación en temas como economía del desarrollo, políticas públicas y econometría.</p>
+            <ul>
+                <li><strong>Estudio 1:</strong> Impacto de las políticas fiscales en el crecimiento económico (2023).</li>
+                <li><strong>Estudio 2:</strong> Análisis econométrico de la desigualdad en América Latina (2022).</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Sección Portafolio -->
+    <section id="portafolio" class="section">
+        <div class="container">
+            <h2>Portafolio</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <h3>Proyecto 1</h3>
+                    <p>Consultoría para optimización de recursos en el sector público.</p>
+                </div>
+                <div class="portfolio-item">
+                    <h3>Proyecto 2</h3>
+                    <p>Análisis de impacto económico para una ONG internacional.</p>
+                </div>
+                <div class="portfolio-item">
+                    <h3>Proyecto 3</h3>
+                    <p>Desarrollo de modelo predictivo para tendencias de mercado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Ebook -->
+    <section id="ebook" class="section">
+        <div class="container">
+            <h2>Ebook</h2>
+            <p>Descubre mi ebook: <strong>"Guía Práctica para el Análisis Económico"</strong>. Este libro ofrece herramientas y metodologías para profesionales en economía.</p>
+            <a href="#" class="btn">Descargar Ebook</a>
+        </div>
+    </section>
+
+    <!-- Sección Contacto -->
+    <section id="contacto" class="section">
+        <div class="container">
+            <h2>Contacto</h2>
+            <p>¿Interesado en colaborar? Contáctame a través de los siguientes medios:</p>
+            <ul>
+                <li>Email: monica.herrera@example.com</li>
+                <li>LinkedIn: linkedin.com/in/monicaherrera</li>
+                <li>Teléfono: +123 456 7890</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Mónica Herrera. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Script para el menú hamburguesa en dispositivos móviles
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
